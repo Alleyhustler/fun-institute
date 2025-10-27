@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Institute</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #888;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        .entrance-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeOut 0.5s 1s forwards;
+        }
+
+        .effect-image {
+            max-width: 60%;
+            max-height: 70%;
+            opacity: 0;
+            filter: blur(20px) brightness(0.3);
+            animation: materialize 0.8s 0.1s forwards;
+        }
+
+        @keyframes materialize {
+            0% {
+                opacity: 0;
+                filter: blur(20px) brightness(0.3);
+                transform: scale(0.9);
+            }
+            50% {
+                opacity: 0.7;
+                filter: blur(10px) brightness(0.6);
+            }
+            100% {
+                opacity: 1;
+                filter: blur(0) brightness(1);
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .container {
+            min-height: 100vh;
+            padding: 60px 40px;
+            position: relative;
+            opacity: 0;
+            animation: activateInterface 0.8s 1.2s forwards;
+        }
+
+        @keyframes activateInterface {
+            to { opacity: 1; }
+        }
+
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(30, 30, 40, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(20, 20, 30, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(100, 100, 120, 0.3), transparent);
+            animation: scan 8s linear infinite;
+            pointer-events: none;
+            opacity: 0;
+            animation: scan 8s 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { top: 0; opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: #ddd;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            letter-spacing: 3px;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .twitter-link {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 30px;
+            color: #888;
+            text-decoration: none;
+            border: 1px solid #333;
+            letter-spacing: 2px;
+            font-size: 11px;
+            transition: all 0.4s ease;
+            background: rgba(20, 20, 20, 0.5);
+        }
+
+        .twitter-link:hover {
+            border-color: #666;
+            color: #ccc;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+
+        .modules {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            padding: 60px 0;
+        }
+
+        .module {
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid #222;
+            padding: 40px 30px;
+            position: relative;
+            transition: all 0.5s ease;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(100, 100, 120, 0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .module:hover::before {
+            opacity: 1;
+        }
+
+        .module:hover {
+            border-color: #333;
+            box-shadow: 
+                inset 0 0 30px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(255, 255, 255, 0.03);
+        }
+
+        .module-title {
+            font-size: 16px;
+            letter-spacing: 3px;
+            color: #999;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .module-content {
+            font-size: 12px;
+            line-height: 1.8;
+            color: #555;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #222, transparent);
+            margin: 15px 0;
+        }
+
+        .chart {
+            width: 100%;
+            height: 80px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #333;
+        }
+
+        .chart svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .data-point {
+            width: 4px;
+            height: 4px;
+            background: #666;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 20%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        .observation-text {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #444;
+            opacity: 0;
+            transition: opacity 1s ease;
+            text-align: center;
+        }
+
+        .observation-text.active {
+            opacity: 1;
+        }
+
+        .corner-marks {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #222;
+            pointer-events: none;
+        }
+
+        .corner-marks.tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .corner-marks.tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .corner-marks.bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .corner-marks.br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        @media (max-width: 768px) {
+            .modules {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .title {
+                font-size: 32px;
+            }
+            .effect-image {
+                max-width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="entrance-overlay">
+        <img src="Survival School (12).png" alt="Institute Projection" class="effect-image">
+        <audio id="hum" loop>
+            <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
+        </audio>
+    </div>
+
+    <div class="bg-pattern"></div>
+    <div class="scan-line"></div>
+    
+    <div class="corner-marks tl"></div>
+    <div class="corner-marks tr"></div>
+    <div class="corner-marks bl"></div>
+    <div class="corner-marks br"></div>
+
+    <div class="container">
+        <header class="header">
+            <img src="Survival School (12).png" alt="Fun Institute" class="logo">
+            <h1 class="title">Fun Institute</h1>
+            <p class="subtitle">Where experiments never end.</p>
+            <a href="https://x.com/FunDOTInstitute" target="_blank" class="twitter-link">ENTER OBSERVATION CHANNEL</a>
+        </header>
+
+        <div class="modules">
+            <div class="module" data-module="test">
+                <h2 class="module-title">Test</h2>
+                <div class="divider"></div>
+                <p class="module-content">
+                    Live subject monitoring.<br>
+                    On-chain behavior patterns recorded.<br>
+                    Volatility threshold: ACTIVE<br>
+                    <br>
+                    <span style="color: #666;">STATUS: OBSERVING</span>
+                </p>
+            </div>
+
+            <div class="module" data-module="experiments">
+                <h2 class="module-title">Experiments</h2>
+                <div class="divider"></div>
+                <p class="module-content">
+                    Research protocols in progress.<br>
+                    Data aggregation: CONTINUOUS<br>
+                    Sample size: INFINITE<br>
+                    <br>
+                    <span style="color: #666;">RESULTS: PENDING</span>
+                </p>
+            </div>
+
+            <div class="module" data-module="psychology">
+                <h2 class="module-title">Chart Psychology</h2>
+                <div class="divider"></div>
+                <p class="module-content">
+                    Human condition mapping.<br>
+                    Emotional wavelength detection.<br>
+                    Fear index: FLUCTUATING
+                </p>
+                <div class="chart">
+                    <svg id="psychChart" viewBox="0 0 300 80">
+                        <path d="M0,40 Q75,20 150,40 T300,40" stroke="#333" fill="none" stroke-width="1"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="observation-text" id="obsText">
+            Subject activity recorded.
+        </div>
+    </div>
+
+    <script>
+        const observations = [
+            "Subject activity recorded.",
+            "Emotional volatility: increasing.",
+            "Continue observation.",
+            "Behavioral pattern detected.",
+            "Neural response logged.",
+            "Experiment ongoing."
+        ];
+
+        let currentObs = 0;
+        const obsText = document.getElementById('obsText');
+
+        function showObservation() {
+            obsText.textContent = observations[currentObs];
+            obsText.classList.add('active');
+            
+            setTimeout(() => {
+                obsText.classList.remove('active');
+            }, 3000);
+
+            currentObs = (currentObs + 1) % observations.length;
+        }
+
+        let interactionTimer;
+        document.addEventListener('mousemove', () => {
+            clearTimeout(interactionTimer);
+            interactionTimer = setTimeout(showObservation, 2000);
+        });
+
+        document.querySelectorAll('.module').forEach(module => {
+            module.addEventListener('mouseenter', showObservation);
+        });
+
+        const psychChart = document.getElementById('psychChart').querySelector('path');
+        let mouseX = 150;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 300;
+            updateChart();
+        });
+
+        function updateChart() {
+            const offset = (mouseX - 150) * 0.3;
+            const curve = `M0,${40 - offset * 0.1} Q75,${20 + offset * 0.3} 150,${40 - offset * 0.2} T300,${40 + offset * 0.1}`;
+            psychChart.setAttribute('d', curve);
+        }
+
+        setTimeout(() => {
+            const hum = document.getElementById('hum');
+            hum.volume = 0.05;
+            hum.play().catch(() => {});
+        }, 500);
+
+        setTimeout(() => {
+            document.querySelectorAll('.corner-marks').forEach(mark => {
+                mark.style.opacity = '0';
+                mark.style.animation = 'none';
+                setTimeout(() => {
+                    mark.style.opacity = '1';
+                    mark.style.transition = 'opacity 1s ease';
+                }, 100);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
